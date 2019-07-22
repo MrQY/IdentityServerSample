@@ -28,7 +28,7 @@ namespace MvcCookieAuthSample
                     },
                     RedirectUris = {"http://localhost:5005/signin-oidc"}, //客户端的登录退出地址
                     PostLogoutRedirectUris = {"http://localhost:5005/signout-callback-oidc"},
-                    RequireConsent=false,
+                    RequireConsent=true,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.Profile,

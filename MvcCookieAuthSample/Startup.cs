@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MvcCookieAuthSample.Services;
+using Microsoft.EntityFrameworkCore;
+using MvcCookieAuthSample.Models;
+using IdentityServer4.Services;
 
 namespace MvcCookieAuthSample
 {
@@ -24,12 +28,23 @@ namespace MvcCookieAuthSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            services.AddIdentity<ApplicationUser, ApplicationUserRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 .AddInMemoryApiResources(Config.GetResources())
                 .AddInMemoryClients(Config.GetClients())
                 .AddInMemoryIdentityResources(Config.GetIdentityResource())
-                .AddTestUsers(Config.GetTestUsers());
+                //.AddTestUsers(Config.GetTestUsers());
+                .AddAspNetIdentity<ApplicationUser>()
+                .Services.AddScoped<IProfileService, ProfileService>();
                
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -38,8 +53,16 @@ namespace MvcCookieAuthSample
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            //密码规则设置
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 5;
+            });
 
-
+            services.AddScoped<ConsentService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
