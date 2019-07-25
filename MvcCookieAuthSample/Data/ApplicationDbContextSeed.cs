@@ -20,20 +20,29 @@ namespace MvcCookieAuthSample.Data
                 _userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 _roleManager = services.GetRequiredService<RoleManager<ApplicationUserRole>>();
 
+                var defaultRole = new ApplicationUserRole
+                {
+                    Name = "Administrators",
+                    NormalizedName = "Administrators"
+                };
+                await _roleManager.CreateAsync(defaultRole);
                 var defaultUser = new ApplicationUser
                 {
                     UserName = "admin",
                     Email = "admin@163.com",
                     NormalizedUserName = "admin",
-                    Avatar = "img.jpg"
+                    Avatar = "img.jpg",
+                    SecurityStamp=DateTime.Now.Ticks.ToString()
                 };
 
-                await _userManager.AddToRoleAsync(defaultUser, "Administrators");
                 var result = await _userManager.CreateAsync(defaultUser, "admin");
                 if (!result.Succeeded)
                 {
                     throw new Exception("初始默认用户失败");
                 }
+
+                await _userManager.AddToRoleAsync(defaultUser, "Administrators");
+                
             }
         }
     }

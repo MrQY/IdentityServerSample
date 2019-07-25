@@ -13,6 +13,7 @@ using MvcCookieAuthSample.Services;
 using Microsoft.EntityFrameworkCore;
 using MvcCookieAuthSample.Models;
 using IdentityServer4.Services;
+using System.Reflection;
 
 namespace MvcCookieAuthSample
 {
@@ -43,9 +44,27 @@ namespace MvcCookieAuthSample
                 .AddInMemoryClients(Config.GetClients())
                 .AddInMemoryIdentityResources(Config.GetIdentityResource())
                 //.AddTestUsers(Config.GetTestUsers());
+                //.AddConfigurationStore(options=> {
+                //    options.ConfigureDbContext = builder => {
+                //        builder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                //            sql => sql.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name));
+                //    };
+                //})
+                //.AddOperationalStore(options => {
+                //    options.ConfigureDbContext = builder =>
+                //    {
+                //        builder.UseSqlServer(
+                //            Configuration.GetConnectionString("DefaultConnection"),
+                //            sql =>
+                //            {
+                //                sql.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                //            });
+                //    };
+                //})
                 .AddAspNetIdentity<ApplicationUser>()
                 .Services.AddScoped<IProfileService, ProfileService>();
-               
+            // //Add-Migration init -Context ConfigurationDbContext -OutputDir Data/Migrations//IdentityServer/ConfigurationDb
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -60,6 +79,7 @@ namespace MvcCookieAuthSample
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 5;
+                options.Password.RequireDigit = false;
             });
 
             services.AddScoped<ConsentService>();

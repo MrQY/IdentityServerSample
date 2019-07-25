@@ -23,9 +23,7 @@
     <div class="col-sm-8">
         <form asp-action="Index">
             <input type="hidden" asp-for="ReturnUrl"/>
-            <div class="alert alert-danger">
-                <div asp-validation-summary="All" class="danger"></div>
-            </div>
+            <div asp-validation-summary="All" class="danger"></div>
             @if (Model.IdentityScopes.Any())
             {
                 <div class="panel">
